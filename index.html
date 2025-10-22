@@ -11,22 +11,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
-    #siteBg { background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('./gazou/main_01_M.jpg'); background-size: cover; background-position: center; background-attachment: fixed; }
+    #siteBg { background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('./gazou/main_01_M.jpg'); background-size: contain; background-position: center; background-attachment: scroll; background-repeat: no-repeat; }
     .card { background-color: rgba(255,255,255,0.9); }
     .blur-backdrop { backdrop-filter: saturate(140%) blur(6px); }
-    @media (max-width: 640px) {
-      #siteBg {
-        background-size: 30% auto; /* さらに縮小 */
-        background-position: center top; /* 上寄せでトリミング回避 */
-        background-attachment: scroll; /* iOS拡大問題回避 */
-        background-repeat: no-repeat;
-      }
-    }
-    @media (min-width: 641px) and (max-width: 1024px) {
-      #siteBg {
-        background-attachment: scroll; /* タブレットでもズーム回避 */
-      }
-    }
+    /* すべてのデバイスで画像全体が収まる設定（必要に応じて個別最適化可能） */
   </style>
 </head>
 <body class="bg-stone-900 text-stone-100">
