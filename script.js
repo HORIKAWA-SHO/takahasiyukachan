@@ -457,4 +457,57 @@
       buildMonthCalendar();
     });
   }
+
+  // ダイエットランチレシピ（Instagram）
+  const lunchInstas = [
+    { name: 'やせごはん | 管理栄養士', handle: '@yasegohan_official', profile: 'https://www.instagram.com/yasegohan_official/', posts: ['https://www.instagram.com/p/Cxq0m6uOg6y/'] },
+    { name: '低脂質ダイエットごはん', handle: '@teishishitsu_diet', profile: 'https://www.instagram.com/teishishitsu_diet/', posts: ['https://www.instagram.com/p/Cw6m8u0Mxyz/'] },
+    { name: '簡単ヘルシーランチ', handle: '@healthy_lunch_lab', profile: 'https://www.instagram.com/healthy_lunch_lab/', posts: ['https://www.instagram.com/p/Cv9AbCdEf12/'] },
+    { name: 'さつまいもレシピ大全', handle: '@imo_recipe', profile: 'https://www.instagram.com/imo_recipe/', posts: ['https://www.instagram.com/p/Cu1XyzAbc34/'] },
+  ];
+  function renderLunchInstaList(){
+    const ul = document.getElementById('lunchInstaList');
+    if (!ul) return;
+    ul.innerHTML = '';
+    lunchInstas.forEach(acc => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = acc.profile;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.className = 'text-orange-600 hover:underline';
+      a.textContent = `${acc.name}（${acc.handle}）`;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const hint = document.getElementById('lunchInstaHint');
+    if (hint) hint.textContent = '「ランダムで1件見る」を押すと埋め込み表示されます。';
+  }
+  function showRandomInstaEmbed(){
+    const target = document.getElementById('lunchInstaEmbed');
+    if (!target) return;
+    const list = lunchInstas.filter(x => Array.isArray(x.posts) && x.posts.length>0);
+    if (list.length === 0) { target.textContent = '埋め込み可能な投稿が見つかりませんでした。'; return; }
+    const pickAcc = list[Math.floor(Math.random()*list.length)];
+    const postUrl = pickAcc.posts[Math.floor(Math.random()*pickAcc.posts.length)];
+    target.innerHTML = '';
+    const block = document.createElement('blockquote');
+    block.className = 'instagram-media';
+    block.setAttribute('data-instgrm-captioned','');
+    block.style.background = '#fff';
+    block.style.margin = '0 auto';
+    const a = document.createElement('a');
+    a.href = postUrl;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = 'Instagram Post';
+    block.appendChild(a);
+    target.appendChild(block);
+    if (window.instgrm && window.instgrm.Embeds && typeof window.instgrm.Embeds.process === 'function') {
+      window.instgrm.Embeds.process();
+    }
+  }
+  renderLunchInstaList();
+  const btnLunch = document.getElementById('lunchRandomBtn');
+  if (btnLunch) btnLunch.addEventListener('click', showRandomInstaEmbed);
 })();
