@@ -333,12 +333,23 @@
     if (eCnt) eCnt.textContent = String(eDays);
   }
   updateWeekly();
+  function updateAchievementMsg(){
+    const msgEl = document.getElementById('achievementMsg');
+    if (!msgEl) return;
+    const st = getDayStatus(todayKey);
+    if (st && st.dinner && st.exercise) {
+      msgEl.textContent = '今日もよく頑張ったね！明日も絶対達成できるよ！';
+    } else {
+      msgEl.textContent = '';
+    }
+  }
   function onChange(){
     const current = getDayStatus(todayKey);
     const updated = { dinner: !!(chkDinner && chkDinner.checked), exercise: !!(chkExercise && chkExercise.checked) };
     setDayStatus(todayKey, Object.assign({}, current, updated));
     updateStreak();
     updateWeekly();
+    updateAchievementMsg();
   }
   if (chkDinner) chkDinner.addEventListener('change', onChange);
   if (chkExercise) chkExercise.addEventListener('change', onChange);
@@ -407,6 +418,7 @@
     }
   }
   buildMonthCalendar();
+  updateAchievementMsg();
 
   // 体重入力（朝）
   const weightInput = document.getElementById('weightInput');
