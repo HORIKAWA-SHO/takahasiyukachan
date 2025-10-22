@@ -14,13 +14,17 @@
     #siteBg { background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('./gazou/main_01_M.jpg'); background-size: cover; background-position: center; background-attachment: fixed; }
     .card { background-color: rgba(255,255,255,0.9); }
     .blur-backdrop { backdrop-filter: saturate(140%) blur(6px); }
-    /* モバイル最適化: 背景画像が拡大され過ぎないように調整 */
     @media (max-width: 640px) {
       #siteBg {
-        background-size: contain;
-        background-position: top center;
+        background-size: contain; /* 全体を見せる */
+        background-position: center top; /* 上寄せでトリミング回避 */
+        background-attachment: scroll; /* iOS拡大問題回避 */
         background-repeat: no-repeat;
-        background-attachment: scroll;
+      }
+    }
+    @media (min-width: 641px) and (max-width: 1024px) {
+      #siteBg {
+        background-attachment: scroll; /* タブレットでもズーム回避 */
       }
     }
   </style>
