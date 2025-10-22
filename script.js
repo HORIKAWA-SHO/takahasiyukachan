@@ -339,8 +339,10 @@
     const st = getDayStatus(todayKey);
     if (st && st.dinner && st.exercise) {
       msgEl.textContent = '今日もよく頑張ったね！明日も絶対達成できるよ！';
+      msgEl.className = 'mt-3 text-sm font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded px-3 py-2';
     } else {
       msgEl.textContent = '';
+      msgEl.className = 'mt-3 text-sm font-semibold text-emerald-700';
     }
   }
   function onChange(){
@@ -481,4 +483,15 @@
     });
   }
   renderLunchInstaList();
+  // 念のためDOM構築完了後にも再描画（端末差対策）
+  document.addEventListener('DOMContentLoaded', function(){
+    renderLunchInstaList();
+    updateAchievementMsg();
+  });
+  window.addEventListener('pageshow', function(){
+    updateAchievementMsg();
+  });
+  window.addEventListener('storage', function(e){
+    if (e && e.key === 'diet_status') updateAchievementMsg();
+  });
 })();
