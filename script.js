@@ -460,10 +460,9 @@
 
   // ダイエットランチレシピ（Instagram）
   const lunchInstas = [
-    { name: 'やせごはん | 管理栄養士', handle: '@yasegohan_official', profile: 'https://www.instagram.com/yasegohan_official/', posts: ['https://www.instagram.com/p/Cxq0m6uOg6y/'] },
-    { name: '低脂質ダイエットごはん', handle: '@teishishitsu_diet', profile: 'https://www.instagram.com/teishishitsu_diet/', posts: ['https://www.instagram.com/p/Cw6m8u0Mxyz/'] },
-    { name: '簡単ヘルシーランチ', handle: '@healthy_lunch_lab', profile: 'https://www.instagram.com/healthy_lunch_lab/', posts: ['https://www.instagram.com/p/Cv9AbCdEf12/'] },
-    { name: 'さつまいもレシピ大全', handle: '@imo_recipe', profile: 'https://www.instagram.com/imo_recipe/', posts: ['https://www.instagram.com/p/Cu1XyzAbc34/'] },
+    { name: 'seigo_diet_recipe', handle: '@seigo_diet_recipe', profile: 'https://www.instagram.com/seigo_diet_recipe?igsh=MW81enVhajJ1cmszcw==', posts: [] },
+    { name: 'food_pfc_bodymake167cm', handle: '@food_pfc_bodymake167cm', profile: 'https://www.instagram.com/food_pfc_bodymake167cm?igsh=MWllMXNrOW56eXI4NQ==', posts: [] },
+    { name: 'kana.0716t', handle: '@kana.0716t', profile: 'https://www.instagram.com/kana.0716t?igsh=MTh1MGFsYnAzM3hpMg==', posts: [] },
   ];
   function renderLunchInstaList(){
     const ul = document.getElementById('lunchInstaList');
@@ -481,7 +480,7 @@
       ul.appendChild(li);
     });
     const hint = document.getElementById('lunchInstaHint');
-    if (hint) hint.textContent = '「ランダムで1件見る」を押すと埋め込み表示されます。';
+    if (hint) hint.textContent = '「ランダムで1件見る」は投稿URLを登録したアカウントから表示します。投稿URLをご提供いただければ埋め込み対応します。';
   }
   function showRandomInstaEmbed(){
     const target = document.getElementById('lunchInstaEmbed');
