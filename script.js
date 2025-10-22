@@ -80,15 +80,25 @@
     '「打ち切るまで打つ。」ー 木兎光太郎'
   ];
 
-  // 夕食データ（曜日別メニュー：ユーザー提供の参考例に準拠）
-  const dinners = [
+  // 夕食データ（曜日別メニュー：2週間ローテ A/B）
+  const dinnersA = [
     { title: '【月】雑穀ごはん + 鶏むね照り焼き + 2副菜', kcal: 480, carb: '雑穀ごはん 100g（約150kcal）', protein: '鶏むね照り焼き（鶏むね100g・しょうゆ・みりん・はちみつ少量）約180kcal', sides: ['キャベツとツナの塩昆布あえ（ツナ水煮・キャベツ・ごま油少量）約80kcal','ブロッコリーと卵のマヨ少なめサラダ 約70kcal'], note: '合計目安：約480kcal' },
     { title: '【火】玄米ごはん + 鮭の塩焼き + 2副菜', kcal: 460, carb: '玄米ごはん 100g（約150kcal）', protein: '鮭の塩焼き（約120g）約180kcal', sides: ['豆腐とわかめの味噌汁 約60kcal','トマトとオニオンスライスのサラダ（オリーブオイル少量）約70kcal'], note: '合計目安：約460kcal' },
-    { title: '【水】オートミールおにぎり + 豚しゃぶ + 2副菜', kcal: 440, carb: 'オートミールおにぎり（オートミール30g＋水）約110kcal', protein: '豚しゃぶ（豚もも100g）＋ポン酢おろし 約200kcal', sides: ['きゅうりとわかめの酢の物 約50kcal','ほうれん草の胡麻和え 約80kcal'], note: '合計目安：約440kcal' },
-    { title: '【木】全粒粉パン + サバ缶トマト煮 + 副菜', kcal: 470, carb: '全粒粉パン 1枚（約120kcal）', protein: 'サバ缶トマト煮（サバ缶水煮半分＋トマト缶＋にんにく＋オリーブオイル少量）約230kcal', sides: ['蒸しブロッコリー＋温泉卵 約120kcal'], note: '合計目安：約470kcal' },
+    { title: '【水】十割そば + 豚しゃぶ + 2副菜', kcal: 490, carb: '十割そば（乾麺60g）約200kcal', protein: '豚しゃぶ（豚もも80g）＋ポン酢おろし 約160kcal', sides: ['きゅうりとわかめの酢の物 約50kcal','ほうれん草の胡麻和え 約80kcal'], note: '合計目安：約490kcal' },
+    { title: '【木】白米 + サバ缶トマト煮 + 副菜', kcal: 500, carb: '白米 100g（約150kcal）', protein: 'サバ缶トマト煮（サバ缶水煮半分＋トマト缶＋にんにく＋オリーブオイル少量）約230kcal', sides: ['蒸しブロッコリー＋温泉卵 約120kcal'], note: '合計目安：約500kcal' },
     { title: '【金】雑穀ごはん + 鶏団子スープ + 2副菜', kcal: 490, carb: '雑穀ごはん 100g（約150kcal）', protein: '鶏団子スープ（鶏むねミンチ100g＋野菜たっぷり）約200kcal', sides: ['ひじきと大豆の煮物 約80kcal','冷ややっこ 約60kcal'], note: '合計目安：約490kcal' },
     { title: '【土】さつまいも + 目玉焼き＋ベーコン + 2副菜', kcal: 480, carb: 'さつまいも 100g（約130kcal）', protein: '目玉焼き＋ベーコン1枚 約180kcal', sides: ['野菜スープ（キャベツ・にんじん・玉ねぎ・コンソメ）約80kcal','アボカドと豆腐のサラダ 約90kcal'], note: '合計目安：約480kcal' },
     { title: '【日】もち麦ごはん + 鶏むね甘酢あん + 副菜', kcal: 470, carb: 'もち麦ごはん 100g（約150kcal）', protein: '鶏むねと野菜の甘酢あん（鶏むね100g・ピーマン・にんじん・玉ねぎ）約220kcal', sides: ['小松菜と油揚げの炒め煮 約100kcal'], note: '合計目安：約470kcal' }
+  ];
+
+  const dinnersB = [
+    { title: '【月】白米 + 鮭の塩焼き + 2副菜', kcal: 490, carb: '白米 100g（約150kcal）', protein: '鮭の塩焼き（約120g）約180kcal', sides: ['豆腐とわかめの味噌汁 約60kcal','きゅうりとわかめの酢の物 約90kcal'], note: '合計目安：約490kcal' },
+    { title: '【火】十割そば + 鶏むね冷しゃぶ + 2副菜', kcal: 500, carb: '十割そば（乾麺60g）約200kcal', protein: '鶏むね冷しゃぶ（100g）約170kcal', sides: ['トマトとオニオンスライスのサラダ 約70kcal','ほうれん草の胡麻和え 約60kcal'], note: '合計目安：約500kcal' },
+    { title: '【水】雑穀ごはん + サバ水煮 + 副菜', kcal: 480, carb: '雑穀ごはん 100g（約150kcal）', protein: 'サバ水煮（1/2缶）約160kcal', sides: ['キャベツとツナの塩昆布あえ 約80kcal','味噌汁（薄め）約40kcal'], note: '合計目安：約480kcal' },
+    { title: '【木】さつまいも + 豆腐ステーキ + 副菜', kcal: 470, carb: 'さつまいも 150g（約195kcal）', protein: '豆腐ステーキ（木綿150g）約120kcal', sides: ['ブロッコリー＋温泉卵 約120kcal'], note: '合計目安：約470kcal' },
+    { title: '【金】白米 + 鶏団子スープ + 2副菜', kcal: 500, carb: '白米 120g（約180kcal）', protein: '鶏団子スープ（鶏むねミンチ100g）約200kcal', sides: ['ひじきと大豆の煮物 約80kcal','冷ややっこ 約60kcal'], note: '合計目安：約500kcal' },
+    { title: '【土】十割そば + 納豆 + 副菜', kcal: 470, carb: '十割そば（乾麺50g）約170kcal', protein: '納豆 1パック 約100kcal', sides: ['小松菜おひたし 約40kcal','トマト 約60kcal'], note: '合計目安：約470kcal' },
+    { title: '【日】雑穀ごはん + 鶏むね甘酢あん + 副菜', kcal: 490, carb: '雑穀ごはん 120g（約180kcal）', protein: '鶏むねと野菜の甘酢あん 約220kcal', sides: ['きのこソテー（オイル極少）約70kcal'], note: '合計目安：約490kcal' }
   ];
 
   const exercises = [
@@ -124,7 +134,11 @@
   const quote = quotes[dayIndex % quotes.length];
   const jsWeekday = new Date(y, now.getMonth(), d).getDay(); // 0=Sun..6=Sat
   const dinnerIndex = (jsWeekday + 6) % 7; // Mon=0..Sun=6
-  const dinner = dinners[dinnerIndex];
+  const startOfYear = new Date(y, 0, 1);
+  const weekNumber = Math.floor((new Date(y, now.getMonth(), d) - startOfYear) / 604800000); // 7日単位
+  const useB = (weekNumber % 2) === 1; // 偶数週:A, 奇数週:B
+  const activeDinners = useB ? dinnersB : dinnersA;
+  const dinner = activeDinners[dinnerIndex];
   const exercise = exercises[dayIndex % exercises.length];
 
   // 反映
