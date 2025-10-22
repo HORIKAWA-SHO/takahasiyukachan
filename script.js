@@ -494,4 +494,109 @@
   window.addEventListener('storage', function(e){
     if (e && e.key === 'diet_status') updateAchievementMsg();
   });
+
+  // コンビニでダイエット（約500kcal）
+  const cvnData = {
+    seven: {
+      label: 'セブンイレブン',
+      combos: [
+        { items: [
+          { text: 'おにぎり（鮭）', kcal: 180 },
+          { text: 'サラダチキン プレーン 1個', kcal: 120 },
+          { text: '具だくさんサラダ（ドレッシング少量）', kcal: 90 },
+          { text: '味噌汁（カップ）', kcal: 40 },
+          { text: 'ヨーグルト（低脂肪・小）', kcal: 70 }
+        ]},
+        { items: [
+          { text: 'おにぎり（梅）', kcal: 160 },
+          { text: 'サラダチキン 1/2', kcal: 60 },
+          { text: '豆腐サラダ（ドレッシング少量）', kcal: 120 },
+          { text: 'スープ春雨', kcal: 120 },
+          { text: 'みかん（小）', kcal: 40 }
+        ]},
+        { items: [
+          { text: '雑穀おにぎり', kcal: 180 },
+          { text: 'ゆで卵 1個', kcal: 70 },
+          { text: 'チキンサラダ（ドレッシング少量）', kcal: 120 },
+          { text: '味噌汁（カップ）', kcal: 40 },
+          { text: '低脂肪ヨーグルト', kcal: 90 }
+        ]}
+      ]
+    },
+    lawson: {
+      label: 'ローソン',
+      combos: [
+        { items: [
+          { text: 'ブランパン 1個', kcal: 70 },
+          { text: 'サラダチキン（ハーブ）1/2', kcal: 60 },
+          { text: '具沢山ミネストローネ', kcal: 140 },
+          { text: 'スモークサーモンサラダ（ドレッシング少量）', kcal: 140 },
+          { text: 'バナナ 1本（小）', kcal: 90 }
+        ]},
+        { items: [
+          { text: 'おにぎり（鮭）', kcal: 180 },
+          { text: 'グリルチキン 1/2', kcal: 70 },
+          { text: 'ベーシックサラダ（ドレッシング少量）', kcal: 80 },
+          { text: 'たまごスープ', kcal: 60 },
+          { text: 'ヨーグルト（低脂肪・小）', kcal: 110 }
+        ]},
+        { items: [
+          { text: '玄米おにぎり', kcal: 180 },
+          { text: '蒸し鶏サラダ（ドレッシング少量）', kcal: 130 },
+          { text: '味噌汁（カップ）', kcal: 40 },
+          { text: 'ゆで卵 1個', kcal: 70 },
+          { text: 'りんご（小）', kcal: 80 }
+        ]}
+      ]
+    },
+    family: {
+      label: 'ファミリーマート',
+      combos: [
+        { items: [
+          { text: '手巻おむすび（梅）', kcal: 160 },
+          { text: 'サラダチキン（胸肉）1個', kcal: 120 },
+          { text: 'シャキシャキ野菜サラダ（ドレッシング少量）', kcal: 80 },
+          { text: '味噌汁（カップ）', kcal: 40 },
+          { text: 'バナナ 1本（小）', kcal: 90 }
+        ]},
+        { items: [
+          { text: 'おにぎり（昆布）', kcal: 160 },
+          { text: 'グリルチキン 1/2', kcal: 70 },
+          { text: 'チョレギサラダ（ドレッシング少量）', kcal: 110 },
+          { text: '参鶏湯スープ（小）', kcal: 110 },
+          { text: 'ヨーグルト（無糖・小）', kcal: 60 }
+        ]},
+        { items: [
+          { text: '雑穀おむすび', kcal: 180 },
+          { text: '蒸し鶏サラダ（ドレッシング少量）', kcal: 120 },
+          { text: 'たまごスープ', kcal: 60 },
+          { text: '枝豆（小）', kcal: 100 },
+          { text: 'みかん（小）', kcal: 40 }
+        ]}
+      ]
+    }
+  };
+  const cvnState = { seven: -1, lawson: -1, family: -1 };
+  function renderCvn(storeKey){
+    const data = cvnData[storeKey];
+    const ul = document.getElementById('cvnItems');
+    const totalEl = document.getElementById('cvnTotal');
+    if (!data || !ul || !totalEl) return;
+    let idx = Math.floor(Math.random() * data.combos.length);
+    if (data.combos.length > 1 && idx === cvnState[storeKey]) idx = (idx + 1) % data.combos.length;
+    cvnState[storeKey] = idx;
+    const combo = data.combos[idx];
+    ul.innerHTML = '';
+    let total = 0;
+    combo.items.forEach(it => { const li = document.createElement('li'); li.textContent = `${it.text}（約${it.kcal}kcal）`; ul.appendChild(li); total += it.kcal; });
+    totalEl.textContent = `${data.label}の合計目安： 約${total}kcal（パターン${idx+1}/${data.combos.length}）`;
+  }
+  const btnSeven = document.getElementById('btnSeven');
+  const btnLawson = document.getElementById('btnLawson');
+  const btnFamily = document.getElementById('btnFamily');
+  if (btnSeven) btnSeven.addEventListener('click', () => renderCvn('seven'));
+  if (btnLawson) btnLawson.addEventListener('click', () => renderCvn('lawson'));
+  if (btnFamily) btnFamily.addEventListener('click', () => renderCvn('family'));
+  const cvnUpdatedAtEl = document.getElementById('cvnUpdatedAt');
+  if (cvnUpdatedAtEl) cvnUpdatedAtEl.textContent = `最終更新日: ${fmtDate(new Date())}`;
 })();
