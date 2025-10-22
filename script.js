@@ -479,34 +479,6 @@
       li.appendChild(a);
       ul.appendChild(li);
     });
-    const hint = document.getElementById('lunchInstaHint');
-    if (hint) hint.textContent = '「ランダムで1件見る」は投稿URLを登録したアカウントから表示します。投稿URLをご提供いただければ埋め込み対応します。';
-  }
-  function showRandomInstaEmbed(){
-    const target = document.getElementById('lunchInstaEmbed');
-    if (!target) return;
-    const list = lunchInstas.filter(x => Array.isArray(x.posts) && x.posts.length>0);
-    if (list.length === 0) { target.textContent = '埋め込み可能な投稿が見つかりませんでした。'; return; }
-    const pickAcc = list[Math.floor(Math.random()*list.length)];
-    const postUrl = pickAcc.posts[Math.floor(Math.random()*pickAcc.posts.length)];
-    target.innerHTML = '';
-    const block = document.createElement('blockquote');
-    block.className = 'instagram-media';
-    block.setAttribute('data-instgrm-captioned','');
-    block.style.background = '#fff';
-    block.style.margin = '0 auto';
-    const a = document.createElement('a');
-    a.href = postUrl;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.textContent = 'Instagram Post';
-    block.appendChild(a);
-    target.appendChild(block);
-    if (window.instgrm && window.instgrm.Embeds && typeof window.instgrm.Embeds.process === 'function') {
-      window.instgrm.Embeds.process();
-    }
   }
   renderLunchInstaList();
-  const btnLunch = document.getElementById('lunchRandomBtn');
-  if (btnLunch) btnLunch.addEventListener('click', showRandomInstaEmbed);
 })();
