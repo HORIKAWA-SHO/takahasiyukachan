@@ -541,7 +541,7 @@
     (function initDefaults(){
       const t = loadTargets();
       if (!t || Object.keys(t).length === 0){
-        saveTargets({ kcal: 1600, p: 80, f: 40, c: 230 });
+        saveTargets({ kcal: 1500, p: 112.5, f: 40, c: 200 });
       }
     })();
 
