@@ -527,6 +527,8 @@
 
     const slismQueryEl = document.getElementById('slismQuery');
     const slismSearchBtn = document.getElementById('slismSearchBtn');
+    const addFoodBtn = document.getElementById('addFoodBtn');
+    const foodListEl = document.getElementById('foodList');
 
     function loadTargets(){ try { return JSON.parse(localStorage.getItem('nutr_targets')||'{}'); } catch(e){ return {}; } }
     function saveTargets(obj){ localStorage.setItem('nutr_targets', JSON.stringify(obj)); }
@@ -537,6 +539,58 @@
     function parseNum(v){ const n = parseFloat(v); return isNaN(n) ? 0 : n; }
     function pct(part, total){ if (!total || total<=0) return 0; return Math.round((part/total)*100); }
     function setBar(el, labelEl, percent){ const p = Math.max(0, Math.min(100, percent)); if (el) el.style.width = p + '%'; if (labelEl) labelEl.textContent = `${percent}%`; }
+
+    function loadFoodDb(){ try { return JSON.parse(localStorage.getItem('nutr_food_db')||'[]'); } catch(e){ return []; } }
+    function saveFoodDb(arr){ localStorage.setItem('nutr_food_db', JSON.stringify(arr)); }
+    function ensureFoodDb(){
+      let db = loadFoodDb();
+      if (!Array.isArray(db) || db.length===0){
+        db = [
+          { name: 'ごはん(白米)100gあたり', type: 'per100g', kcal: 168, p: 2.5, f: 0.3, c: 37.0 },
+          { name: '玄米100gあたり', type: 'per100g', kcal: 165, p: 2.8, f: 1.0, c: 35.6 },
+          { name: '鶏むね(皮なし)100gあたり', type: 'per100g', kcal: 108, p: 22.0, f: 1.5, c: 0 },
+          { name: 'サラダチキン(100g)', type: 'perPiece', kcal: 120, p: 23.0, f: 1.5, c: 0.5 },
+          { name: '卵 1個', type: 'perPiece', kcal: 80, p: 6.2, f: 5.4, c: 0.2 },
+          { name: 'バナナ 1本(小)', type: 'perPiece', kcal: 90, p: 1.1, f: 0.2, c: 23.0 },
+          { name: 'さつまいも100gあたり', type: 'per100g', kcal: 132, p: 1.2, f: 0.2, c: 31.9 },
+          { name: '鮭(生)100gあたり', type: 'per100g', kcal: 133, p: 20.0, f: 4.5, c: 0 },
+          { name: '納豆 1パック', type: 'perPiece', kcal: 100, p: 8.3, f: 5.0, c: 5.4 },
+          { name: 'ヨーグルト(低脂肪)1個', type: 'perPiece', kcal: 80, p: 5.0, f: 2.0, c: 9.0 }
+        ];
+        saveFoodDb(db);
+      }
+      return db;
+    }
+    function findFoodByName(name){
+      const db = loadFoodDb();
+      const n = (name||'').trim();
+      if (!n) return null;
+      return db.find(x => x.name.toLowerCase() === n.toLowerCase()) || null;
+    }
+    function calcFromFood(name, amount, mode){
+      const item = findFoodByName(name);
+      if (!item) return null;
+      const amt = parseNum(amount);
+      if (amt<=0) return null;
+      if (mode === 'g' && item.type === 'per100g'){
+        const ratio = amt / 100;
+        return { name: `${item.name} ${amt}g`, kcal: item.kcal*ratio, p: item.p*ratio, f: item.f*ratio, c: item.c*ratio };
+      }
+      if (mode === 'piece' && item.type === 'perPiece'){
+        return { name: `${item.name} x${amt}`, kcal: item.kcal*amt, p: item.p*amt, f: item.f*amt, c: item.c*amt };
+      }
+      return null;
+    }
+    function renderFoodDatalist(){
+      if (!foodListEl) return;
+      const db = ensureFoodDb();
+      foodListEl.innerHTML = '';
+      db.forEach(it => {
+        const opt = document.createElement('option');
+        opt.value = it.name;
+        foodListEl.appendChild(opt);
+      });
+    }
 
     (function initDefaults(){
       const t = loadTargets();
@@ -653,6 +707,64 @@
     }
 
     render();
+    renderFoodDatalist();
+
+    function attachAuto(mealKey, ids){
+      const nameEl = document.getElementById(ids.name);
+      const amtEl = document.getElementById(ids.amount);
+      const modeEl = document.getElementById(ids.mode);
+      const addBtn = document.getElementById(ids.addBtn);
+      const prevEl = document.getElementById(ids.preview);
+      function updatePrev(){
+        if (!prevEl) return;
+        const res = calcFromFood(nameEl && nameEl.value, amtEl && amtEl.value, modeEl && modeEl.value);
+        if (res){
+          prevEl.textContent = `≈ ${Math.round(res.kcal)}kcal / P${res.p.toFixed(1)} F${res.f.toFixed(1)} C${res.c.toFixed(1)}`;
+        } else {
+          prevEl.textContent = '';
+        }
+      }
+      if (nameEl) nameEl.addEventListener('input', updatePrev);
+      if (amtEl) amtEl.addEventListener('input', updatePrev);
+      if (modeEl) modeEl.addEventListener('change', updatePrev);
+      if (addBtn){
+        addBtn.addEventListener('click', function(){
+          const res = calcFromFood(nameEl && nameEl.value, amtEl && amtEl.value, modeEl && modeEl.value);
+          if (!res) return;
+          const log = loadLog(); ensureDay(log, todayKey);
+          log[todayKey][mealKey].push({ name: res.name, kcal: res.kcal, p: res.p, f: res.f, c: res.c });
+          saveLog(log);
+          if (nameEl) nameEl.value=''; if (amtEl) amtEl.value=''; updatePrev();
+          render();
+        });
+      }
+    }
+
+    attachAuto('br', { name:'inBrAutoName', amount:'inBrAutoAmount', mode:'inBrAutoMode', addBtn:'addBrAuto', preview:'prevBrAuto' });
+    attachAuto('lu', { name:'inLuAutoName', amount:'inLuAutoAmount', mode:'inLuAutoMode', addBtn:'addLuAuto', preview:'prevLuAuto' });
+    attachAuto('di', { name:'inDiAutoName', amount:'inDiAutoAmount', mode:'inDiAutoMode', addBtn:'addDiAuto', preview:'prevDiAuto' });
+    attachAuto('sn', { name:'inSnAutoName', amount:'inSnAutoAmount', mode:'inSnAutoMode', addBtn:'addSnAuto', preview:'prevSnAuto' });
+
+    if (addFoodBtn){
+      addFoodBtn.addEventListener('click', function(){
+        const name = (prompt('食品名を入力（例: ごはん(白米)100gあたり / 卵 1個）')||'').trim();
+        if (!name) return;
+        const kind = (prompt('登録タイプを選択: per100g または perPiece','per100g')||'').trim();
+        if (kind!=='per100g' && kind!=='perPiece') return;
+        const kcal = parseFloat(prompt('基準1単位あたりのカロリー(kcal)')||'');
+        const p = parseFloat(prompt('基準1単位あたりのタンパク質(g)')||'');
+        const f = parseFloat(prompt('基準1単位あたりの脂質(g)')||'');
+        const c = parseFloat(prompt('基準1単位あたりの炭水化物(g)')||'');
+        if ([kcal,p,f,c].some(x => isNaN(x))) return;
+        const db = loadFoodDb();
+        const idx = db.findIndex(x => x.name.toLowerCase() === name.toLowerCase());
+        const entry = { name, type: kind, kcal, p, f, c };
+        if (idx>=0) db[idx] = entry; else db.push(entry);
+        saveFoodDb(db);
+        renderFoodDatalist();
+        alert('登録しました');
+      });
+    }
 
     window.addEventListener('storage', function(e){
       if (!e) return;
