@@ -495,6 +495,172 @@
     if (e && e.key === 'diet_status') updateAchievementMsg();
   });
 
+  // PFC/カロリー管理
+  (function(){
+    const tgtKcalEl = document.getElementById('nutrTargetKcal');
+    const tgtPEl = document.getElementById('nutrTargetP');
+    const tgtFEl = document.getElementById('nutrTargetF');
+    const tgtCEl = document.getElementById('nutrTargetC');
+    const saveTargetsBtn = document.getElementById('saveTargetsBtn');
+
+    const sumKcalEl = document.getElementById('sumKcal');
+    const sumPEl = document.getElementById('sumP');
+    const sumFEl = document.getElementById('sumF');
+    const sumCEl = document.getElementById('sumC');
+    const remainKcalEl = document.getElementById('remainKcal');
+    const remainPEl = document.getElementById('remainP');
+    const remainFEl = document.getElementById('remainF');
+    const remainCEl = document.getElementById('remainC');
+    const barKcal = document.getElementById('barKcal');
+    const barP = document.getElementById('barP');
+    const barF = document.getElementById('barF');
+    const barC = document.getElementById('barC');
+    const barKcalText = document.getElementById('barKcalText');
+    const barPText = document.getElementById('barPText');
+    const barFText = document.getElementById('barFText');
+    const barCText = document.getElementById('barCText');
+
+    const inBr = { name: document.getElementById('inBrName'), kcal: document.getElementById('inBrKcal'), p: document.getElementById('inBrP'), f: document.getElementById('inBrF'), c: document.getElementById('inBrC'), addBtn: document.getElementById('addBr'), list: document.getElementById('listBr') };
+    const inLu = { name: document.getElementById('inLuName'), kcal: document.getElementById('inLuKcal'), p: document.getElementById('inLuP'), f: document.getElementById('inLuF'), c: document.getElementById('inLuC'), addBtn: document.getElementById('addLu'), list: document.getElementById('listLu') };
+    const inDi = { name: document.getElementById('inDiName'), kcal: document.getElementById('inDiKcal'), p: document.getElementById('inDiP'), f: document.getElementById('inDiF'), c: document.getElementById('inDiC'), addBtn: document.getElementById('addDi'), list: document.getElementById('listDi') };
+    const inSn = { name: document.getElementById('inSnName'), kcal: document.getElementById('inSnKcal'), p: document.getElementById('inSnP'), f: document.getElementById('inSnF'), c: document.getElementById('inSnC'), addBtn: document.getElementById('addSn'), list: document.getElementById('listSn') };
+
+    const slismQueryEl = document.getElementById('slismQuery');
+    const slismSearchBtn = document.getElementById('slismSearchBtn');
+
+    function loadTargets(){ try { return JSON.parse(localStorage.getItem('nutr_targets')||'{}'); } catch(e){ return {}; } }
+    function saveTargets(obj){ localStorage.setItem('nutr_targets', JSON.stringify(obj)); }
+    function loadLog(){ try { return JSON.parse(localStorage.getItem('nutr_log')||'{}'); } catch(e){ return {}; } }
+    function saveLog(obj){ localStorage.setItem('nutr_log', JSON.stringify(obj)); }
+    function ensureDay(log, key){ if (!log[key]) log[key] = { br: [], lu: [], di: [], sn: [] }; return log; }
+
+    function parseNum(v){ const n = parseFloat(v); return isNaN(n) ? 0 : n; }
+    function pct(part, total){ if (!total || total<=0) return 0; return Math.round((part/total)*100); }
+    function setBar(el, labelEl, percent){ const p = Math.max(0, Math.min(100, percent)); if (el) el.style.width = p + '%'; if (labelEl) labelEl.textContent = `${percent}%`; }
+
+    (function initDefaults(){
+      const t = loadTargets();
+      if (!t || Object.keys(t).length === 0){
+        saveTargets({ kcal: 1600, p: 80, f: 40, c: 230 });
+      }
+    })();
+
+    function render(){
+      const targets = loadTargets();
+      if (tgtKcalEl && targets.kcal!=null) tgtKcalEl.value = String(targets.kcal);
+      if (tgtPEl && targets.p!=null) tgtPEl.value = String(targets.p);
+      if (tgtFEl && targets.f!=null) tgtFEl.value = String(targets.f);
+      if (tgtCEl && targets.c!=null) tgtCEl.value = String(targets.c);
+
+      const log = loadLog();
+      ensureDay(log, todayKey);
+      const day = log[todayKey];
+
+      // 合計
+      let total = { kcal: 0, p: 0, f: 0, c: 0 };
+      ['br','lu','di','sn'].forEach(meal => {
+        (day[meal]||[]).forEach(it => {
+          total.kcal += Number(it.kcal)||0;
+          total.p += Number(it.p)||0;
+          total.f += Number(it.f)||0;
+          total.c += Number(it.c)||0;
+        });
+      });
+      if (sumKcalEl) sumKcalEl.textContent = `${Math.round(total.kcal)} kcal`;
+      if (sumPEl) sumPEl.textContent = `${total.p.toFixed(1)} g`;
+      if (sumFEl) sumFEl.textContent = `${total.f.toFixed(1)} g`;
+      if (sumCEl) sumCEl.textContent = `${total.c.toFixed(1)} g`;
+
+      // 進捗バー
+      if (targets && targets.kcal>0) setBar(barKcal, barKcalText, pct(total.kcal, targets.kcal)); else setBar(barKcal, barKcalText, 0);
+      if (targets && targets.p>0) setBar(barP, barPText, pct(total.p, targets.p)); else setBar(barP, barPText, 0);
+      if (targets && targets.f>0) setBar(barF, barFText, pct(total.f, targets.f)); else setBar(barF, barFText, 0);
+      if (targets && targets.c>0) setBar(barC, barCText, pct(total.c, targets.c)); else setBar(barC, barCText, 0);
+
+      // 残り
+      function fmtRemain(cur, tgt, unit){ if (!tgt || tgt<=0) return '—'; const r = Math.max(0, tgt - cur); return unit==='kcal' ? `${Math.round(r)} kcal` : `${r.toFixed(1)} g`; }
+      if (remainKcalEl) remainKcalEl.textContent = fmtRemain(total.kcal, targets.kcal, 'kcal');
+      if (remainPEl) remainPEl.textContent = fmtRemain(total.p, targets.p, 'g');
+      if (remainFEl) remainFEl.textContent = fmtRemain(total.f, targets.f, 'g');
+      if (remainCEl) remainCEl.textContent = fmtRemain(total.c, targets.c, 'g');
+
+      // リスト描画
+      function drawList(mealKey, ui){
+        if (!ui.list) return;
+        ui.list.innerHTML = '';
+        (day[mealKey]||[]).forEach((it, idx) => {
+          const li = document.createElement('li');
+          li.className = 'flex items-center justify-between gap-2';
+          const left = document.createElement('span');
+          left.textContent = `${it.name || '—'}（${Math.round(Number(it.kcal)||0)}kcal / P${Number(it.p||0).toFixed(1)} F${Number(it.f||0).toFixed(1)} C${Number(it.c||0).toFixed(1)}）`;
+          const btn = document.createElement('button');
+          btn.textContent = '削除';
+          btn.className = 'text-xs px-2 py-0.5 rounded border border-stone-300 text-stone-700 hover:bg-stone-50';
+          btn.addEventListener('click', function(){
+            const curr = loadLog(); ensureDay(curr, todayKey);
+            curr[todayKey][mealKey].splice(idx,1);
+            saveLog(curr);
+            render();
+          });
+          li.appendChild(left);
+          li.appendChild(btn);
+          ui.list.appendChild(li);
+        });
+      }
+      drawList('br', inBr); drawList('lu', inLu); drawList('di', inDi); drawList('sn', inSn);
+    }
+
+    function attachAdd(mealKey, ui){
+      if (!ui.addBtn) return;
+      ui.addBtn.addEventListener('click', function(){
+        const name = ui.name ? ui.name.value.trim() : '';
+        const kcal = parseNum(ui.kcal && ui.kcal.value);
+        const p = parseNum(ui.p && ui.p.value);
+        const f = parseNum(ui.f && ui.f.value);
+        const c = parseNum(ui.c && ui.c.value);
+        const log = loadLog(); ensureDay(log, todayKey);
+        log[todayKey][mealKey].push({ name, kcal, p, f, c });
+        saveLog(log);
+        if (ui.name) ui.name.value=''; if (ui.kcal) ui.kcal.value=''; if (ui.p) ui.p.value=''; if (ui.f) ui.f.value=''; if (ui.c) ui.c.value='';
+        render();
+      });
+    }
+
+    if (saveTargetsBtn){
+      saveTargetsBtn.addEventListener('click', function(){
+        const t = {
+          kcal: parseNum(tgtKcalEl && tgtKcalEl.value),
+          p: parseNum(tgtPEl && tgtPEl.value),
+          f: parseNum(tgtFEl && tgtFEl.value),
+          c: parseNum(tgtCEl && tgtCEl.value)
+        };
+        saveTargets(t);
+        render();
+      });
+    }
+
+    attachAdd('br', inBr);
+    attachAdd('lu', inLu);
+    attachAdd('di', inDi);
+    attachAdd('sn', inSn);
+
+    if (slismSearchBtn){
+      slismSearchBtn.addEventListener('click', function(){
+        const q = (slismQueryEl && slismQueryEl.value.trim()) || '';
+        const url = q ? `https://www.google.com/search?q=${encodeURIComponent('site:xn--calorie-u53f.slism.jp ' + q)}` : 'http://xn--calorie-u53f.slism.jp/';
+        window.open(url, '_blank', 'noopener');
+      });
+    }
+
+    render();
+
+    window.addEventListener('storage', function(e){
+      if (!e) return;
+      if (e.key === 'nutr_targets' || e.key === 'nutr_log') render();
+    });
+    window.addEventListener('pageshow', render);
+  })();
+
   // コンビニでダイエット（約500kcal）
   const cvnData = {
     seven: {

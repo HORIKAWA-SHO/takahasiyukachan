@@ -125,6 +125,135 @@
       </div>
     </section>
 
+    <!-- PFC/カロリー管理 -->
+    <section class="card border border-stone-200 rounded-xl p-4 md:p-6 shadow-sm">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="text-base md:text-lg font-semibold text-orange-400">PFC/カロリー管理</h3>
+        <div class="text-xs md:text-sm text-stone-600 flex items-center gap-2">
+          <a href="http://xn--calorie-u53f.slism.jp/" target="_blank" rel="noopener noreferrer" class="text-orange-600 hover:underline">カロリー計算サイト</a>
+          <div class="hidden sm:flex items-center gap-1">
+            <input id="slismQuery" type="text" placeholder="食品名で検索" class="w-36 md:w-48 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900 text-xs"/>
+            <button id="slismSearchBtn" class="px-2 py-1 rounded bg-orange-600 text-white text-xs hover:bg-orange-700">検索</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 目標設定 -->
+      <div class="mt-4 grid grid-cols-2 md:grid-cols-5 gap-3">
+        <label class="text-xs md:text-sm text-stone-700">
+          目標カロリー(kcal)
+          <input id="nutrTargetKcal" type="number" min="0" class="mt-1 w-full rounded border border-stone-300 bg-white px-3 py-2 text-stone-900" placeholder="例: 1700" />
+        </label>
+        <label class="text-xs md:text-sm text-stone-700">
+          タンパク質(P g)
+          <input id="nutrTargetP" type="number" min="0" step="1" class="mt-1 w-full rounded border border-stone-300 bg-white px-3 py-2 text-stone-900" placeholder="例: 110" />
+        </label>
+        <label class="text-xs md:text-sm text-stone-700">
+          脂質(F g)
+          <input id="nutrTargetF" type="number" min="0" step="1" class="mt-1 w-full rounded border border-stone-300 bg-white px-3 py-2 text-stone-900" placeholder="例: 45" />
+        </label>
+        <label class="text-xs md:text-sm text-stone-700">
+          炭水化物(C g)
+          <input id="nutrTargetC" type="number" min="0" step="1" class="mt-1 w-full rounded border border-stone-300 bg-white px-3 py-2 text-stone-900" placeholder="例: 180" />
+        </label>
+        <div class="flex items-end">
+          <button id="saveTargetsBtn" class="w-full inline-flex items-center justify-center px-3 md:px-4 py-2 rounded bg-teal-600 text-white hover:bg-teal-700">目標を保存</button>
+        </div>
+      </div>
+
+      <!-- サマリー表示 -->
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="rounded border border-stone-200 bg-white p-3">
+          <div class="text-sm font-semibold text-stone-800">今日の合計</div>
+          <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-stone-700">
+            <div>カロリー</div><div id="sumKcal" class="text-right">0 kcal</div>
+            <div>タンパク質(P)</div><div id="sumP" class="text-right">0 g</div>
+            <div>脂質(F)</div><div id="sumF" class="text-right">0 g</div>
+            <div>炭水化物(C)</div><div id="sumC" class="text-right">0 g</div>
+          </div>
+          <div class="mt-3 space-y-2">
+            <div>
+              <div class="flex justify-between text-[11px] text-stone-600"><span>カロリー</span><span id="barKcalText">0%</span></div>
+              <div class="w-full h-2 bg-stone-200 rounded"><div id="barKcal" class="h-2 bg-orange-500 rounded" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] text-stone-600"><span>P</span><span id="barPText">0%</span></div>
+              <div class="w-full h-2 bg-stone-200 rounded"><div id="barP" class="h-2 bg-emerald-500 rounded" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] text-stone-600"><span>F</span><span id="barFText">0%</span></div>
+              <div class="w-full h-2 bg-stone-200 rounded"><div id="barF" class="h-2 bg-rose-500 rounded" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] text-stone-600"><span>C</span><span id="barCText">0%</span></div>
+              <div class="w-full h-2 bg-stone-200 rounded"><div id="barC" class="h-2 bg-sky-500 rounded" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="rounded border border-stone-200 bg-white p-3">
+          <div class="text-sm font-semibold text-stone-800">残り（目標まで）</div>
+          <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-stone-700">
+            <div>カロリー</div><div id="remainKcal" class="text-right">—</div>
+            <div>P</div><div id="remainP" class="text-right">—</div>
+            <div>F</div><div id="remainF" class="text-right">—</div>
+            <div>C</div><div id="remainC" class="text-right">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 入力（朝/昼/夜/間食） -->
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <h4 class="font-semibold text-stone-800">朝食</h4>
+          <div class="mt-2 flex flex-wrap items-end gap-2 text-xs">
+            <input id="inBrName" class="w-32 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="品目" />
+            <input id="inBrKcal" type="number" step="1" class="w-24 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="kcal" />
+            <input id="inBrP" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="P" />
+            <input id="inBrF" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="F" />
+            <input id="inBrC" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="C" />
+            <button id="addBr" class="px-2 py-1 rounded bg-stone-800 text-white hover:bg-stone-900">追加</button>
+          </div>
+          <ul id="listBr" class="mt-2 list-disc pl-5 text-sm text-stone-900 space-y-1"></ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-stone-800">昼食</h4>
+          <div class="mt-2 flex flex-wrap items-end gap-2 text-xs">
+            <input id="inLuName" class="w-32 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="品目" />
+            <input id="inLuKcal" type="number" step="1" class="w-24 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="kcal" />
+            <input id="inLuP" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="P" />
+            <input id="inLuF" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="F" />
+            <input id="inLuC" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="C" />
+            <button id="addLu" class="px-2 py-1 rounded bg-stone-800 text-white hover:bg-stone-900">追加</button>
+          </div>
+          <ul id="listLu" class="mt-2 list-disc pl-5 text-sm text-stone-900 space-y-1"></ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-stone-800">夕食</h4>
+          <div class="mt-2 flex flex-wrap items-end gap-2 text-xs">
+            <input id="inDiName" class="w-32 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="品目" />
+            <input id="inDiKcal" type="number" step="1" class="w-24 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="kcal" />
+            <input id="inDiP" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="P" />
+            <input id="inDiF" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="F" />
+            <input id="inDiC" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="C" />
+            <button id="addDi" class="px-2 py-1 rounded bg-stone-800 text-white hover:bg-stone-900">追加</button>
+          </div>
+          <ul id="listDi" class="mt-2 list-disc pl-5 text-sm text-stone-900 space-y-1"></ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-stone-800">間食</h4>
+          <div class="mt-2 flex flex-wrap items-end gap-2 text-xs">
+            <input id="inSnName" class="w-32 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="品目" />
+            <input id="inSnKcal" type="number" step="1" class="w-24 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="kcal" />
+            <input id="inSnP" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="P" />
+            <input id="inSnF" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="F" />
+            <input id="inSnC" type="number" step="0.1" class="w-20 rounded border border-stone-300 bg-white px-2 py-1 text-stone-900" placeholder="C" />
+            <button id="addSn" class="px-2 py-1 rounded bg-stone-800 text-white hover:bg-stone-900">追加</button>
+          </div>
+          <ul id="listSn" class="mt-2 list-disc pl-5 text-sm text-stone-900 space-y-1"></ul>
+        </div>
+      </div>
+    </section>
+
     <section class="bg-white border border-gray-200 rounded-xl p-4 md:p-6 shadow-sm">
       <h3 class="text-base md:text-lg font-semibold text-orange-400">実施チェック</h3>
       <p class="text-sm text-gray-500 mt-1">今日の実施状況を記録します（端末内に保存）。</p>
