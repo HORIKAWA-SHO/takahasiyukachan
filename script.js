@@ -495,6 +495,22 @@
     if (e && e.key === 'diet_status') updateAchievementMsg();
   });
 
+  // Slism モバイル検索ボタン
+  (function(){
+    const input = document.getElementById('slismQueryMobile');
+    const btn = document.getElementById('slismGoBtn');
+    if (!btn) return;
+    function go(){
+      const q = (input && input.value.trim()) || '';
+      const url = q ? `https://www.google.com/search?q=${encodeURIComponent('site:xn--calorie-u53f.slism.jp ' + q)}` : 'https://www.google.com/search?q=site:xn--calorie-u53f.slism.jp';
+      window.open(url, '_blank', 'noopener');
+    }
+    btn.addEventListener('click', go);
+    if (input){
+      input.addEventListener('keydown', function(e){ if (e.key === 'Enter') go(); });
+    }
+  })();
+
   // コンビニでダイエット（約500kcal）
   const cvnData = {
     seven: {
