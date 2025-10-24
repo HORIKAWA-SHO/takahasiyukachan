@@ -529,6 +529,15 @@
     const slismSearchBtn = document.getElementById('slismSearchBtn');
     const addFoodBtn = document.getElementById('addFoodBtn');
     const foodListEl = document.getElementById('foodList');
+    const foodReg = {
+      name: document.getElementById('foodRegName'),
+      type: document.getElementById('foodRegType'),
+      kcal: document.getElementById('foodRegKcal'),
+      p: document.getElementById('foodRegP'),
+      f: document.getElementById('foodRegF'),
+      c: document.getElementById('foodRegC'),
+      saveBtn: document.getElementById('foodRegSave')
+    };
 
     function loadTargets(){ try { return JSON.parse(localStorage.getItem('nutr_targets')||'{}'); } catch(e){ return {}; } }
     function saveTargets(obj){ localStorage.setItem('nutr_targets', JSON.stringify(obj)); }
@@ -589,6 +598,28 @@
         const opt = document.createElement('option');
         opt.value = it.name;
         foodListEl.appendChild(opt);
+      });
+    }
+
+    if (foodReg.saveBtn){
+      foodReg.saveBtn.addEventListener('click', function(){
+        const name = (foodReg.name && foodReg.name.value.trim()) || '';
+        const kind = (foodReg.type && foodReg.type.value) || 'per100g';
+        const kcal = parseFloat(foodReg.kcal && foodReg.kcal.value);
+        const p = parseFloat(foodReg.p && foodReg.p.value);
+        const f = parseFloat(foodReg.f && foodReg.f.value);
+        const c = parseFloat(foodReg.c && foodReg.c.value);
+        if (!name || (kind!=='per100g' && kind!=='perPiece') || [kcal,p,f,c].some(x => isNaN(x))){
+          alert('入力を確認してください');
+          return;
+        }
+        const db = loadFoodDb();
+        const idx = db.findIndex(x => x.name.toLowerCase() === name.toLowerCase());
+        const entry = { name, type: kind, kcal, p, f, c };
+        if (idx>=0) db[idx] = entry; else db.push(entry);
+        saveFoodDb(db);
+        renderFoodDatalist();
+        alert('登録しました');
       });
     }
 
